@@ -55,24 +55,6 @@ for line in goodWords:
     lineElements = line.split()
     scoreDict[lineElements[0]] = [0, float(lineElements[1].strip('%'))]
 
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# H E L P E R   F U N C T I O N S
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-def findGreenLetter(letter, position):
-    length = 4 - position
-    goodWords = re.search(f"(\w{position}){letter}(\w{length})", goodWords)
-
-def findYellowLetter(letter, position):
-    length = 4 - position
-    goodWords = re.search(f"")
-
-def removeBlackLetter(letter, position):
-    return
-
-
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # D E T E R M I N E   W H A T   W O R D   T O   C H O O S E
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,8 +113,16 @@ for i in range(5):
     if color == 'b':
         # Removing all words that have this letter
         for word in scoreDict:
-            if word.find(letter) != -1: # if this letter is in word
-                toRemove.add(word)
+            indices = [idx for idx, char in enumerate(word) if char == letter]
+            # indicies = list of every occurance of current letter
+            # for each index in indicies:
+                # looking for greens first
+                # if colors[index] = 'g':
+                    # remove all words without the letter in index
+            
+            # if len(indices) != 0: # if this letter is in word
+            #     if 
+            #     toRemove.add(word)
 
     # Removing words marked for removal
     for word in toRemove:
