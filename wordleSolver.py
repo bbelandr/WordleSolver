@@ -101,30 +101,43 @@ recommendedPercent = recommendedItem[1][1]
 print(f"I recommend this word: {recommendedWord}, score of {recommendedPercent}")
 
 colors = input("Tell me the colors of the letters in order (like 'bbgyb'): ")
-for i in range(5):
-    color = colors[i]
-    letter = recommendedWord[i]
-    toRemove = set()    # Marks words to be removed because we can't remove them during iteration in the for loop
-    if color == 'g':
-        # Removing all words that don't have this letter in spot 'i'
-        for word in scoreDict:
-            if word[i] != letter:
-                toRemove.add(word)
-    if color == 'b':
-        # Removing all words that have this letter
-        for word in scoreDict:
-            indices = [idx for idx, char in enumerate(word) if char == letter]
-            # indicies = list of every occurance of current letter
-            # for each index in indicies:
-                # looking for greens first
-                # if colors[index] = 'g':
-                    # remove all words without the letter in index
-            
-            # if len(indices) != 0: # if this letter is in word
-            #     if 
-            #     toRemove.add(word)
 
-    # Removing words marked for removal
-    for word in toRemove:
-        del scoreDict[word]
+# Count green and yellow occurrences for each letter in the guess
+from collections import Counter
+
+guess = recommendedWord
+green_yellow_counts = Counter()
+for i, c in enumerate(colors):
+    if c in ('g', 'y'):
+        green_yellow_counts[guess[i]] += 1
+
+toRemove = set()
+for word in scoreDict:
+    remove = False
+    word_counter = Counter(word)
+    # First, check green and yellow rules
+    for i, c in enumerate(colors):
+        l = guess[i]
+        if c == 'g':
+            if word[i] != l:
+                remove = True
+                break
+        elif c == 'y':
+            if word[i] == l or l not in word:
+                remove = True
+                break
+    # Now, check black rules
+    for i, c in enumerate(colors):
+        l = guess[i]
+        if c == 'b':
+            allowed = green_yellow_counts[l]
+            if word_counter[l] > allowed:
+                remove = True
+                break
+    if remove:
+        toRemove.add(word)
+
+for word in toRemove:
+    del scoreDict[word]
+
 print(scoreDict)
