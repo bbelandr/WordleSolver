@@ -58,86 +58,95 @@ for line in goodWords:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # D E T E R M I N E   W H A T   W O R D   T O   C H O O S E
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+wordFound = False
+for i in range(6):
+    # Running total
+        # For each word in scoreDict:
+            # For each letter in word:
+                # presentLetters.Pushback each non-duplicate letter (use a set)
+            # For each letter in presentLetters:
+                # Increment wordLetters by letter
+    wordLetters = {chr(c): 0 for c in range(ord('A'), ord('Z') + 1)}   # Dictionary of characters A-Z
+    presentLetters = set()
+    for word in scoreDict:
+        presentLetters.clear()
+        for letter in word:
+            presentLetters.add(letter)
+        for letter in presentLetters:
+            wordLetters[letter] += 1
+    # print (wordLetters)
 
-# Running total
-    # For each word in scoreDict:
-        # For each letter in word:
-            # presentLetters.Pushback each non-duplicate letter (use a set)
-        # For each letter in presentLetters:
-            # Increment wordLetters by letter
-wordLetters = {chr(c): 0 for c in range(ord('A'), ord('Z') + 1)}   # Dictionary of characters A-Z
-presentLetters = set()
-for word in scoreDict:
-    presentLetters.clear()
-    for letter in word:
-        presentLetters.add(letter)
-    for letter in presentLetters:
-        wordLetters[letter] += 1
-# print (wordLetters)
+    # Scoring the words
+        # For each word in scoreDict:
+            # # For each letter in word:
+                # presentLetters.Pushback each non-duplicate letter (use a set)
+            # For each letter in presentLetters:
+                # letterScore = wordLetters[letter]
+                # scoreDict[word][0] += letterScore
+    for word in scoreDict:
+        presentLetters.clear()
+        for letter in word:
+            presentLetters.add(letter)
+        for letter in presentLetters:
+            letterScore = wordLetters[letter]
+            scoreDict[word][0] += letterScore
 
-# Scoring the words
-    # For each word in scoreDict:
-        # # For each letter in word:
-            # presentLetters.Pushback each non-duplicate letter (use a set)
-        # For each letter in presentLetters:
-            # letterScore = wordLetters[letter]
-            # scoreDict[word][0] += letterScore
-for word in scoreDict:
-    presentLetters.clear()
-    for letter in word:
-        presentLetters.add(letter)
-    for letter in presentLetters:
-        letterScore = wordLetters[letter]
-        scoreDict[word][0] += letterScore
+    # Sorting the results
+    sortedScores = sorted(scoreDict.items(), key=lambda item: item[1][0], reverse=True)
 
-# Sorting the results
-sortedScores = sorted(scoreDict.items(), key=lambda item: item[1][0], reverse=True)
+    # Choosing a word to present to the user
+    for recommendedItem in sortedScores:
+        recommendedWord = recommendedItem[0]
+        recommendedScore = recommendedItem[1][0]
+        recommendedPercent = recommendedItem[1][1]
+        print(f"I recommend this word: {recommendedWord}, score of {recommendedPercent}")
+        colors = input("Tell me the colors of the letters in order (like 'bbgyb'): ")
+        if colors != 'n':
+            break
 
-# Choosing a word to present to the user
-recommendedItem = sortedScores[0]
-recommendedWord = sortedScores[0][0]
-recommendedScore = recommendedItem[1][0]
-recommendedPercent = recommendedItem[1][1]
-print(f"I recommend this word: {recommendedWord}, score of {recommendedPercent}")
+    if colors == 'ggggg' or colors == 'q':   # We solved the puzzle or the user just wants to stop
+        break
+        
 
-colors = input("Tell me the colors of the letters in order (like 'bbgyb'): ")
+    # Count green and yellow occurrences for each letter in the guess
+    from collections import Counter
 
-# Count green and yellow occurrences for each letter in the guess
-from collections import Counter
-
-guess = recommendedWord
-green_yellow_counts = Counter()
-for i, c in enumerate(colors):
-    if c in ('g', 'y'):
-        green_yellow_counts[guess[i]] += 1
-
-toRemove = set()
-for word in scoreDict:
-    remove = False
-    word_counter = Counter(word)
-    # First, check green and yellow rules
+    guess = recommendedWord
+    green_yellow_counts = Counter()
     for i, c in enumerate(colors):
-        l = guess[i]
-        if c == 'g':
-            if word[i] != l:
-                remove = True
-                break
-        elif c == 'y':
-            if word[i] == l or l not in word:
-                remove = True
-                break
-    # Now, check black rules
-    for i, c in enumerate(colors):
-        l = guess[i]
-        if c == 'b':
-            allowed = green_yellow_counts[l]
-            if word_counter[l] > allowed:
-                remove = True
-                break
-    if remove:
-        toRemove.add(word)
+        if c in ('g', 'y'):
+            green_yellow_counts[guess[i]] += 1
 
-for word in toRemove:
-    del scoreDict[word]
+    toRemove = set()
+    for word in scoreDict:
+        remove = False
+        word_counter = Counter(word)
+        # First, check green and yellow rules
+        for i, c in enumerate(colors):
+            l = guess[i]
+            if c == 'g':
+                if word[i] != l:
+                    remove = True
+                    break
+            elif c == 'y':
+                if word[i] == l or l not in word:
+                    remove = True
+                    break
+        # Now, check black rules
+        for i, c in enumerate(colors):
+            l = guess[i]
+            if c == 'b':
+                allowed = green_yellow_counts[l]
+                if word_counter[l] > allowed:
+                    remove = True
+                    break
+        if remove:
+            toRemove.add(word)
 
-print(scoreDict)
+    for word in toRemove:
+        del scoreDict[word]
+
+    # Reset scoreDict scores (but keep the remaining words)
+    for word in scoreDict:
+        scoreDict[word][0] = 0
+
