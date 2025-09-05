@@ -99,12 +99,21 @@ for i in range(6):
         recommendedWord = recommendedItem[0]
         recommendedScore = recommendedItem[1][0]
         recommendedPercent = recommendedItem[1][1]
-        print(f"I recommend this word: {recommendedWord}, score of {recommendedPercent}")
-        colors = input("Tell me the colors of the letters in order (like 'bbgyb'): ")
-        if colors != 'n':
+        while True:     # Nested for loop to let us keep printing sortedScores without iterating to the next item
+            print(f"I recommend this word: {recommendedWord}, score of {recommendedPercent}")
+            colors = input("Tell me the colors of the letters in order (like 'bbgyb'): ")
+            if colors == 'p':
+                print(sortedScores)
+            else: 
+                break
+        if colors == 'n':   # User wants to see the next recommended word
+            continue
+        if len(colors) == 5 and set(colors).issubset({'g', 'b', 'y'}):  # User entered colors
+            break;
+        else:   # User entered something that wasn't recognized
             break
 
-    if colors == 'ggggg' or colors == 'q':   # We solved the puzzle or the user just wants to stop
+    if colors == 'ggggg' or colors == 'q':   # We solved the puzzle or the user just wants to stop the whole program
         break
         
 
